@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var todos = [
-        Todo(title: "Buy groceries"),
+        Todo(title: "Buy groceries",subtitle: "hello"),
         Todo(title: "Finish project"),
         Todo(title: "Call mom", isCompleted: true),
         Todo(title: "Go for a run"),
@@ -19,10 +19,25 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            List(todos){ todo in
-                Text(todo.title)
-            }
-            .navigationTitle("Todos")
+            List($todos){ $todo in
+                HStack {
+                    Image(systemName: todo.isCompleted ? "checkmark.circle.fill" : "circle")
+                        .onTapGesture {
+                            todo.isCompleted.toggle()
+                        }
+                    VStack(alignment: .leading , spacing: 5){
+                        Text(todo.title)
+                            .strikethrough(todo.isCompleted)
+                        if !todo.subtitle.isEmpty {
+                            Text(todo.subtitle)
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .strikethrough(todo.isCompleted)
+                        }
+                    }
+                }
+        }
+        .navigationTitle("Todos")
         }
     }
 }
