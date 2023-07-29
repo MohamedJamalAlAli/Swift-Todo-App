@@ -16,34 +16,70 @@ struct ContentView: View {
         Todo(title: "Go for a run"),
         Todo(title: "Read a book")
     ]
-    
+    @State private var showSheet = false
     var body: some View {
         NavigationStack {
-            List($todos){ $todo in
-                HStack {
-                    Image(systemName: todo.isCompleted ? "checkmark.circle.fill" : "circle")
-                        .onTapGesture {
-                            todo.isCompleted.toggle()
-                        }
-                    VStack(alignment: .leading , spacing: 5){
-                        Text(todo.title)
-                            .strikethrough(todo.isCompleted)
-                        if !todo.subtitle.isEmpty {
-                            Text(todo.subtitle)
-                                .font(.caption)
-                                .foregroundColor(.gray)
+            List($todos, editActions: [.all]){ $todo in
+                NavigationLink {
+                    TodoDetailView(todo: $todo)
+                } label : {
+                    HStack {
+                        
+                        Image(systemName: todo.isCompleted ? "checkmark.circle.fill" : "circle")
+                            .onTapGesture {
+                                todo.isCompleted.toggle()
+                            }
+                        VStack(alignment: .leading , spacing: 5){
+                            Text(todo.title)
                                 .strikethrough(todo.isCompleted)
+                            if !todo.subtitle.isEmpty {
+                                Text(todo.subtitle)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                    .strikethrough(todo.isCompleted)
+                            }
                         }
                     }
+                    
+                    
                 }
-        }
-        .navigationTitle("Todos")
-        }
-    }
-}
+            }
+            
+            .navigationTitle("Todos")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading)
+                {
+                    EditButton()
+                }
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button {
+                        showSheet = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+                
+            
+            .sheet(isPresented: $showSheet ){
+                NewTodoView(sourceArray: $todos)
+                    .presentationDetents([.medium])
+            }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+                        
+                    
+                    }
+                }
+                
+            }
+            
+         
+            
+            
+            struct ContentView_Previews: PreviewProvider {
+                static var previews: some View {
+                    ContentView()
+                }
+            }
+
+
